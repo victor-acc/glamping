@@ -1,13 +1,13 @@
-﻿@model reserva3.Models.Reserva
+@model reserva3.Models.Reserva
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Reserva";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
 
-<h4>Reserva</h4>
+
+
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -57,7 +57,7 @@
                     {
                         foreach (var paquete in ViewBag.Paquetes)
                         {
-                            <option value="@paquete.Idpaquete" data-precio="@paquete.Precio">@paquete.NombrePaquete</option>
+                            <option value="@paquete.Idpaquete" data-precio="@paquete.Precio" data-habitacion="@paquete.Idhabitacion">@paquete.NombrePaquete</option>
                         }
                     }
                     else
@@ -70,6 +70,10 @@
             <div class="form-group">
                 <label for="precioPaquete">Precio del paquete:</label>
                 <input type="text" id="precioPaquete" name="preciopaquete" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label for="precioPaquete">Habitacion del paquete:</label>
+                <input type="text" id="habitacionPaquete" name="habitacionpaquete" class="form-control" readonly />
             </div>
 
 
@@ -113,9 +117,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="SubTotal" class="control-label"></label>
-                <input asp-for="SubTotal" class="form-control" readonly />
+                <input asp-for="SubTotal" id="subtotal" class="form-control" step="0.01" readonly />
                 <span asp-validation-for="SubTotal" class="text-danger"></span>
             </div>
+            <div class="form-group">
+            
             <div class="form-group">
                 <label asp-for="Descuento" class="control-label"></label>
                 <input asp-for="Descuento" class="form-control" readonly />
@@ -123,12 +129,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Iva" class="control-label"></label>
-                <input asp-for="Iva" class="form-control" readonly />
+                <input asp-for="Iva" id="iva" class="form-control" readonly />
                 <span asp-validation-for="Iva" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="MontoTotal" class="control-label"></label>
-                <input asp-for="MontoTotal" class="form-control" id="subtotal" readonly />
+                <input asp-for="MontoTotal" id="montoTotal" class="form-control"  readonly />
                 <span asp-validation-for="MontoTotal" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -136,10 +142,7 @@
                 <select asp-for="MetodoPago" class ="form-control" asp-items="ViewBag.MetodoPago"></select>
             </div>
             
-            <div class="form-group">
-                <label asp-for="IdestadoReserva" class="control-label"></label>
-                <select asp-for="IdestadoReserva" class ="form-control" asp-items="ViewBag.IdestadoReserva"></select>
-            </div>
+            
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -166,9 +169,80 @@
         </div>
     </div>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="form-group">
+    <a asp-action="Index" >Volver atras</a>
 </div>
+<style>
+    .container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .permissions-container {
+        max-height: 120px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        padding: 15px;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 20px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #66bb6a;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+    .btn {
+        transition: background-color 0.3s;
+    }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+</style>
+
 
 
 
@@ -202,6 +276,8 @@
 
                 var precio = selectedOption.data('precio');
 
+                var habitacion = selectedOption.data('habitacion');
+
 
                 if (precio !== undefined) {
 
@@ -210,115 +286,114 @@
 
                     $('#precioPaquete').val('');
                 }
+
+                if (habitacion !== undefined) {
+
+                    $('#habitacionPaquete').val(habitacion);
+                } else {
+
+                    $('#habitacionPaquete').val('');
+                }
             });
+           
 
 
             $('#paquete').change();
         });
     </script>
     <script>
+        $('#paquete').change(function () {
+
+            var selectedOption = $(this).find('option:selected');
+
+         
+
+
+            
+        });
+
+    </script>
+    <script>
         $(document).ready(function () {
-            // Actualizar el precio del servicio seleccionado
-            $('#servicio').change(function () {
-                var selectedOption = $(this).find('option:selected');
-                var precio = selectedOption.data('precio');
-                if (precio !== undefined) {
-                    $('#precioservicio').val('$' + precio);
-                } else {
-                    $('#precioservicio').val('');
-                }
+            function actualizarTotales() {
+                let precioPaquete = parseFloat($('#precioPaquete').val()) || 0;
+                let subtotalServicios = 0;
+
+                // Calcular el subtotal de los servicios
+                $('#tablaServicios tbody tr').each(function () {
+                    let filaSubtotal = parseFloat($(this).find('.subtotal').text().replace('$', '')) || 0;
+                    subtotalServicios += filaSubtotal;
+                });
+
+                // Subtotal total (paquete + servicios)
+                let subtotal = precioPaquete + subtotalServicios;
+                $('#subtotal').val(subtotal.toFixed(2));
+
+                // Calcular descuento (10%)
+                let descuento = subtotal * 0.10;
+                $('#descuento').val(descuento.toFixed(2));
+
+                // Calcular IVA (12%)
+                let iva = subtotal * 0.12;
+                $('#iva').val(iva.toFixed(2));
+
+                // Calcular monto total (300,000 + subtotal + IVA - descuento)
+                let montoTotal = 300000 + subtotal + iva - descuento;
+                $('#montoTotal').val(montoTotal.toFixed(2));
+            }
+
+            // Mostrar precio del paquete seleccionado
+            $('#paquete').change(function () {
+                let precioPaquete = parseFloat($(this).find(':selected').data('precio')) || 0;
+                $('#precioPaquete').val(precioPaquete.toFixed(2));
+                actualizarTotales();
             });
 
-            // Botón "Agregar Servicio"
+            // Agregar servicios a la tabla
             $('#agregarServicio').click(function () {
-                var selectedService = $('#servicio option:selected');
-                var servicioId = selectedService.val();
-                var nombreServicio = selectedService.text();
-                var precioServicio = selectedService.data('precio');
-                var cantidad = 1;  // Valor inicial de cantidad
+                let selectedService = $('#servicio option:selected');
+                let nombreServicio = selectedService.text();
+                let precioServicio = parseFloat(selectedService.data('precio')) || 0;
+                let cantidad = 1;
 
                 if (nombreServicio && precioServicio) {
-                    var subtotal = precioServicio * cantidad;
+                    let subtotal = precioServicio * cantidad;
 
-                    // Crear una nueva fila en la tabla
-                    var nuevaFila = `
-                                <tr data-id="${servicioId}">
+                    let nuevaFila = `
+                                <tr>
                                     <td>${nombreServicio}</td>
-                                    <td>$${precioServicio}</td>
-                                    <td>
-                                        <input type="number" class="form-control cantidad" value="${cantidad}" min="1" style="width: 70px;">
-                                    </td>
+                                    <td>$${precioServicio.toFixed(2)}</td>
+                                    <td><input type="number" class="form-control cantidad" value="${cantidad}" min="1" style="width: 70px;"></td>
                                     <td class="subtotal">$${subtotal.toFixed(2)}</td>
                                     <td><button type="button" class="btn btn-danger btn-sm eliminarServicio">Eliminar</button></td>
-                                </tr>`;
+                                </tr>
+                            `;
 
-                    // Agregar la fila a la tabla
                     $('#tablaServicios tbody').append(nuevaFila);
-
-                    // Ocultar el servicio añadido del dropdown
-                    $('#servicio option[value="' + servicioId + '"]').hide();
                     $('#servicio').val('');
-                    $('#precioservicio').val('');
+                    actualizarTotales();
                 }
             });
 
-            // Cambiar cantidad y recalcular subtotal
+            // Actualizar totales al cambiar la cantidad
             $('#tablaServicios').on('change', '.cantidad', function () {
-                var fila = $(this).closest('tr');
-                var precio = parseFloat(fila.find('td:nth-child(2)').text().replace('$', ''));
-                var cantidad = $(this).val();
-                var subtotal = precio * cantidad;
+                let fila = $(this).closest('tr');
+                let precio = parseFloat(fila.find('td:nth-child(2)').text().replace('$', '')) || 0;
+                let cantidad = parseInt($(this).val()) || 1;
+                let subtotal = precio * cantidad;
 
                 fila.find('.subtotal').text('$' + subtotal.toFixed(2));
+                actualizarTotales();
             });
 
-            // Eliminar servicio de la tabla y mostrarlo de nuevo en el dropdown
+            // Eliminar servicio de la tabla
             $('#tablaServicios').on('click', '.eliminarServicio', function () {
-                var fila = $(this).closest('tr');
-                var servicioId = fila.data('id');
-
-                // Mostrar el servicio de nuevo en el dropdown
-                $('#servicio option[value="' + servicioId + '"]').show();
-
-                // Eliminar la fila de la tabla
-                fila.remove();
+                $(this).closest('tr').remove();
+                actualizarTotales();
             });
         });
     </script>
-     <script>
-        document.getElementById("DocumentoCliente").addEventListener("blur", function () {
-            var documento = this.value;
 
-            if (documento) {
-                fetch(`/Reservas/ObtenerClientePorDocumento?documento=${documento}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Llena los campos con la información del cliente
-                            document.getElementById("NombreCliente").value = data.data.nombre;
-                            document.getElementById("ApellidoCliente").value = data.data.apellido;
-                            document.getElementById("CorreoCliente").value = data.data.email; // Verifica que el campo aquí coincida
-                            document.getElementById("TelefonoCliente").value = data.data.telefono;
-                        } else {
-                            // Muestra el modal si el cliente no existe
-                            $('#clienteNoExisteModal').modal('show');
-
-                            // Limpia los campos si no se encuentra el cliente
-                            document.getElementById("NombreCliente").value = "";
-                            document.getElementById("ApellidoCliente").value = "";
-                            document.getElementById("CorreoCliente").value = "";
-                            document.getElementById("TelefonoCliente").value = "";
-                        }
-                    })
-                    .catch(error => console.error("Error:", error));
-            }
-        });
-     </script>
-    <script>
-        document.getElementById("DocumentoCliente").addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                event.preventDefault(); 
-            }
-        });
-    </script>
 }
+   
+
